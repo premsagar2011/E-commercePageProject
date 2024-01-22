@@ -1,0 +1,183 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+public class JdbcProject2 
+{
+	static String url="jdbc:mysql://localhost:3306/palle";
+	static String username="root";
+	static String password="BUNNYprem@1610";
+	static String insert="insert into studentpallejava values(?,?,?)";
+	static String deleteTable="delete from studentpallejava where sid=?";
+	static String updateTable="update studentpallejava set course=? where sid=?";
+	static String select="select * from studentpallejava";
+	static Statement s=null;
+	static Connection con=null;
+	
+	public static void createTable() 
+	{
+		String createTable="create table costumer(cid int,fname varchar(40),lname varchar(40))";
+		try 
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection(url, username, password);
+			s=con.createStatement();
+			s.executeUpdate(createTable);
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				s.close();
+				con.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	public static void insertTable(int id,String name,String course) 
+	{
+		PreparedStatement ps=null;
+		Connection con=null;
+		try 
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection(url, username, password);
+			ps=con.prepareStatement(insert);
+			ps.setInt(1, id);
+			ps.setString(2, name);
+			ps.setString(3, course);
+			ps.executeUpdate();
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				ps.close();
+				con.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	public static void delete(int id)
+	{
+		Connection con=null;
+		PreparedStatement ps=null;
+		try 
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection(url, username, password);
+			ps=con.prepareStatement(deleteTable);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				ps.close();
+				con.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	public static void updateTable(String course,int id)
+	{
+		Connection con=null;
+		PreparedStatement ps=null;
+		try
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection(url, username, password);
+			ps=con.prepareStatement(updateTable);
+			ps.setString(1, course);
+			ps.setInt(2, id);
+			ps.executeUpdate();
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				ps.close();
+				con.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	public static ArrayList<Student> select()
+	{
+		ArrayList<Student> al=new ArrayList<Student>();
+		try 
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection(url, username, password);
+			s=con.createStatement();
+			ResultSet rs=s.executeQuery(select);
+			while(rs.next())
+			{
+				int sid=rs.getInt("sid");
+				String name=rs.getString("sname");
+				String course=rs.getString("course");
+				Student s=new Student(sid, name, course);
+				al.add(s);
+			}
+			
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		return al;
+	}
+}
